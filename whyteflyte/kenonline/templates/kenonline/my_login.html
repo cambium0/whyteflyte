@@ -1,0 +1,23 @@
+{% extends 'kenonline/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<script>
+//alert("In my_login.html, csrftoken is " + csrftoken);
+</script>
+
+<form method="POST" autocomplete="off">
+    {% csrf_token %}
+{% for field in loginform %}
+    <div class="fieldWrapper mb-3">
+        {{ field.errors }}
+        {{ field.label_tag }} {{ field }}
+    </div>
+{% endfor %}
+    <input type="submit" value="Login" style="padding-bottom: 4px;"/>
+
+
+</form>
+
+{% endblock content %}

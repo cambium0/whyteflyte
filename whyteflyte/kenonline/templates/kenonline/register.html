@@ -1,0 +1,21 @@
+{% extends 'kenonline/base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <form method="POST" autocomplete="off" style="background: #b34444;">
+    {% csrf_token %}
+    <!-- {{registerform}} was here but i removed it to implement my custom form template -->
+    <table border="0" cellpadding="2" cellspacing="2" align="center">
+{% for field in registerform %}
+        <tr>
+        <td align="right" style="padding-right: 12px;" valign="middle">{{ field.errors }}<br>
+        <b>{{ field.label_tag }}</b></td><td valign="middle">{{ field }}</td>
+        </tr>
+{% endfor %}
+    </table>
+    <input type="submit" value="Register" style="margin: 12px;"/>
+
+</form>
+
+{% endblock content %}

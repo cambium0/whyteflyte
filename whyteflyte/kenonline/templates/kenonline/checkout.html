@@ -1,0 +1,184 @@
+{% extends 'kenonline/base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="box-element" id="form-wrapper">
+                <form id="form">
+                    <div id="user-info">
+                        <div class="form-field">
+                            <input id="guest_name" required class="form-control" type-="text" name="name" placeholder="Name..">
+                        </div>
+                        <div class="form-field">
+                            <input id="guest_email" required class="form-control" type-="email" name="email" placeholder="Email..">
+                        </div>
+                    </div>
+
+                    <div id="shipping-info">
+                        <br>
+                        <p>Shipping Information:</p>
+                        <hr>
+                        <div class="form-field">
+                            <input class="form-control" type="text" name="address" placeholder="Address..">
+                        </div>
+                        <div class="form-field">
+                            <input class="form-control" type="text" name="city" placeholder="City..">
+                        </div>
+                        <div class="form-field">
+                            <input class="form-control" type="text" name="state" placeholder="State..">
+                        </div>
+                        <div class="form-field">
+                            <input class="form-control" type="text" name="zipcode" placeholder="Zip code..">
+                        </div>
+                        <div class="form-field">
+                            <input class="form-control" type="text" name="country" placeholder="Country..">
+                        </div>
+                    </div>
+
+                    <br>
+                 <!--<input id="form-button" class="btn btn-success btn-block" type="submit" value="Continue">-->
+                </form>
+            </div>
+
+            <br>
+            <!--<div class="box-element">-->
+            <div class="box-element hidden" id="payment-info">
+                    <!--<small>Paypal Options</small>-->
+                    <div id="paypal-button-container"></div>
+            <!--<iframe style="width: 400px; height: 300px;" id="paypal-button-container" src="https://pp-integration-1457ab772d8f.herokuapp.com/"></iframe>-->
+
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+
+           <div class="box-element">
+                <a class="btn btn-outline-dark" href="{% url 'my_cart' %}">&#x2190; Back to Cart</a>
+                <hr>
+                <h3>Order Summary</h3>
+                <hr>
+                {% for item in items %}
+                <div class="cart-row">
+                    <div style="flex:2"><img class="row-image" src="{% static 'kenonline/images/music_sales.png' %}"></div>
+                    <div style="flex:2"><p>{{item.product.name}}</p></div>
+                    <div style="flex:1"><p>${{item.product.price|floatformat:2}}</p></div>
+                    <div style="flex:2"><p>x{{item.quanity}}</p></div>
+                </div>
+                {% endfor %}
+                <h5>Items:  {{order.get_cart_items}}</h5>
+                <h5>Total:  ${{order.get_cart_total|floatformat:2}}</h5>
+                <script>
+                    function submit_payment_amount() {
+                        document.getElementById('purchaseData').value = purchaseData;
+                        if (user  == 'AnonymousUser' && (document.getElementById('guest_name').value.length < 5 || document.getElementById('guest_email')).value.indexOf('@') < 0) {
+                            alert("You must complete both the name and email fields before continuing.")
+                            return
+                        }
+                        submitFormData()
+                        //document.getElementById('pay_form').submit();
+                    }
+                </script>
+                <form id='pay_form' action='https://pp-integration-1457ab772d8f.herokuapp.com/pay' method='post'>
+                <!--<form id='pay_form' action='http://localhost:8888/api/orders' method='post'>-->
+                <!--<form id='pay_form' action='http://localhost:3000/pay' method='post'>-->
+                <input type='hidden' id='purchaseData' name='purchaseData'>
+                </form>
+                <button style="background: blue;" onClick="submit_payment_amount();">Submit Payment</button>
+           </div>
+        </div>
+
+        <script>
+            purchased_files = [];
+
+            {% for item in items %}
+            purchased_files.push('{{item.product.name}}')
+            {% endfor %}
+
+            purchaseData = '{{order.get_cart_total|floatformat:2}}';
+        </script>
+
+
+    <script type="text/javascript">
+        var shipping = '{{order.shipping}}'
+        var total = '{{order.get_cart_total|floatformat:2}}'
+
+        if (shipping == 'False') {
+            document.getElementById('shipping-info').innerHTML = ''
+        }
+
+        if (user != 'AnonymousUser') {
+            document.getElementById('user-info').innerHTML = ''
+        }
+        else {
+            alert("apparently, user == 'AnonymousUser': " + user)
+        }
+
+        if (shipping == 'False' && user != 'AnonymousUser') {
+            //Hide entire form if user is logged in and shipping is false
+            document.getElementById('form-wrapper').classList.add("hidden");
+            //Show payment if logged in user wants to buy an item that does not require shipping
+            document.getElementById('payment-info').classList.remove("hidden");
+        }
+
+        var form = document.getElementById('form')
+        form.addEventListener('submit', function(e) {
+            e.preventDefault()
+            document.getElementById('form-button').classList.add("hidden");
+            document.getElementById('payment-info').classList.remove("hidden");
+        })
+
+        function submitFormData() {
+            //alert("Payment button clicked")
+            
+            var userFormData = {
+                'name': null,
+                'email': null,
+                'total': total,
+            }
+
+            var shippingInfo = {
+                'address': null,
+                'city': null,
+                'state': null,
+                'zipcode': null,
+            }
+
+            if (shipping != 'False') {
+                shippingInfo.address = form.address.value
+                shippingInfo.city = form.city.value
+                shippingInfo.state = form.state.value
+                shppingInfo.zipcode = form.zipcode.value
+            }
+
+            if (user == 'AnonymousUser') {
+                userFormData.name = form.name.value
+                userFormData.email = form.email.value
+            }
+
+
+            var url = "/process_order/"
+            fetch(url, {
+                method:'POST',
+                headers:{
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken':csrftoken,
+                },
+                body:JSON.stringify({'form':userFormData, 'shipping':shippingInfo}),
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                
+                cart = {}
+                document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/"
+
+                document.getElementById('pay_form').submit();
+                //window.location.href = "{% url 'store' %}"
+
+                })
+        }
+
+    </script>
+
+{% endblock content %}

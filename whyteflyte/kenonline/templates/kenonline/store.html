@@ -1,0 +1,79 @@
+{% extends 'kenonline/base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+{% if do_download %}
+
+<button id="myBtn">Download Your File(s)</button>
+
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+{% for file in do_download %}
+    <p>
+{% with d_path='kenonline/audio/'|add:file %}
+<!--
+<iframe id="download_frame" width="100" height="100" frameborder="1" source="{% static d_path %}">wow check it out</iframe>
+-->
+<script>
+    modal.style.display = "block";
+</script>
+
+<a href="{% static d_path %}" download>{{file}}</a>
+{% endwith %}
+    </p>
+{% endfor %}
+  </div>
+<script>getModal();</script>
+{% endif %}
+
+</div>
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4" style="background: #b4b439;">
+<h1 style="color: #b34444; font-weight: bold;">Purchase My Music</h1>
+
+<p style="color: #b34444;">Have a listen and add tunes to your shopping cart if you like them.</p>
+
+<ul class="list-group">
+    {% for product in products %}
+    {% with f_path="kenonline/audio/"|add:product.name %}
+            <li class="list-group-item">
+            <audio controls="controls">
+                    <source src="{% static f_path %}"/>
+            </audio>
+            <button class="btn btn-outline-secondary add-btn update-cart" data-product="{{product.id}}" data-action="add">Add to Cart</button>
+            <a href="#" class="link-warning" style="text-decoration: none;">{{product.name}} <span style="float: right;">$0.99</span></a>
+            </li>
+    {% endwith %}
+    {% endfor %}
+</ul>
+
+            <h2 style="color: #b34444; margin-top: 20px; margin-bottom: 20px;">Written Music</h2>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <a href="#" class="link-warning" style="text-decoration: none;"><img src="{% static 'kenonline/images/modes.png' %}"></a>
+                    <p style="margin-top: 10px; margin-bottom: 10px;">Similar to <i>Diatonic Major And Minor Scales</i> by Segovia, these scales traverse the fret board (fingerings and string assignments included) to the largest extent possible given the key. Playing the scales regularly will improve reading, knowledge of the fret board, dexterity and strength, and improvisation.</p>
+                </li>
+            </ul>
+            </div>
+        </div>
+</div>
+
+
+<script>
+        window.onload = function () {
+            console.log("running onload event for set_evs()!")
+            set_evs();
+        }; 
+</script>
+
+
+
+{% endblock content %}

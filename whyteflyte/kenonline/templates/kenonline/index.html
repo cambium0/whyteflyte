@@ -1,0 +1,60 @@
+{% extends 'kenonline/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<img src="{% static 'kenonline/images/logo3.png' %}" style="margin: 30px; text-align: right;">
+
+<div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 208px; margin-top: 160px;">
+    <span class="fs-4" style="color: #dc4444;">Ken Online</span>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto" style="background: #b4b439;">
+        <li class="nav-item">
+            <a class="nav-link link-text" href="#" aria-current="page">
+                Home
+            </a>
+        </li>
+        <li>
+            <a class="nav-link link-text" href="#">
+                Bio
+            </a>
+        </li>
+        <li>
+            <a class="nav-link link-text" href="#">
+                Gallery
+            </a>
+        </li>
+        <li>
+            <a class="nav-link link-text" href="{% url 'store' %}">
+                Store
+            </a>
+        </li>
+
+    </ul>
+</div>
+</div>
+
+
+<div class="content" style="margin-top: 120px;">
+    <h2 style="color: #d34444;">Listen To <span style="font-style: italic;">Thursday Morning</span></h2>
+    <p style="text-align: center;">
+        <audio controls="controls">
+            <source src="{% static 'kenonline/audio/thursday_morning.wav' %}"/>
+        </audio>     
+    </p>
+    <h2 style="color: #d34444;">Listen To <span style="font-style: italic;">Jill's Skirt</span></h2>
+    <p style="text-align: center;">
+        <audio controls="controls">
+                <source src="{% static 'kenonline/audio/jills_skirt.wav' %}"/>
+        </audio>
+    </p>
+    <h2 style="color: #d34444;">Listen To <span style="font-style: italic;">Christmas Eve</span></h2>
+    <p style="text-align: center;">
+        <audio controls="controls">
+            <source src="{% static 'kenonline/audio/christmas_eve.wav' %}"/>
+        </audio>
+    </p>
+
+</div>
+
+{% endblock content %}
